@@ -1,0 +1,14 @@
+{
+  "api": {
+    "baseURL": "/v1",
+    "key": "Wwdg29Kvf2SE7Jb7aN3tXIkh9caXFCSZ7RQ7eqrnG7Gh6/DqxNayAc9jFFBEh7SuOZ2p0MH3DC8o1eWSvW9SmcpW1+Arq4Ims9Fon+AIL/i9Zp1eFkWrOiMche5D2t8Ur8+z5LYt5xME/ynPlXUDonww2tISFsEOoBVCSURaeCE=",
+    "secret": "s2E0u1SqFdK+VlGz6pVI9FYErfrPOpRAPpBH07EXK10="
+  },
+  "orientdb": {
+    "host": "ec2-54-189-181-33.us-west-2.compute.amazonaws.com",
+    "port": 3000,
+    "name": "plcclr-dev1",
+    "username": "admin",
+    "password": "admin"
+  }
+}
