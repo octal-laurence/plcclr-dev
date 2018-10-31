@@ -11,15 +11,17 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // routes
+var headerCORS = require('./http/headerCORS');
 var headersAuthorization = require('./http/headersAuthorization');
 var indexRouter = require('./routes/index');
 var policeClearanceCertification = require('./routes/policeClearanceCertification');
+app.use(headerCORS);
 app.use(headersAuthorization);
 app.use('/', indexRouter);
 app.use('/PoliceClearanceCertification', policeClearanceCertification);
