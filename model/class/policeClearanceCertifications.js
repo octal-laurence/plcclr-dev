@@ -30,9 +30,14 @@ class PoliceClearanceCertifications {
     city,
     province,
     postalCode,
+    applicantIDPhoto,
+    applicantSignature,
+    applicantFingerPrint,
   }) {
     return new Promise((resolve, reject) => {
       const dateRecord = helper.dateMoment(new Date(), helper.dateFormat.orientdb);
+      const leftThumb = applicantFingerPrint.leftThumb //.substring(1, 4);
+      const rightThumb = applicantFingerPrint.rightThumb //.substring(1, 4);
       this._db.query(`
         begin; 
         let certifications = INSERT INTO ${this._tbl} SET ${`
@@ -50,7 +55,11 @@ class PoliceClearanceCertifications {
           firstName = :firstName,
           middleName = :middleName,
           lastName = :lastName,
-          fullName = :fullName 
+          fullName = :fullName,
+          applicantIDPhoto = :applicantIDPhoto,
+          applicantSignature = :applicantSignature,
+          applicantFingerPrintLeft = :applicantFingerPrintLeft,
+          applicantFingerPrintRight = :applicantFingerPrintRight
         `.replace(/\n/g, '')}
         let address = INSERT INTO ${this._address.tbl} SET ${`
           applicantId = $applicants.@rid,
@@ -64,7 +73,9 @@ class PoliceClearanceCertifications {
         commit;
 
         return [{"certification": $certifications.@rid}, {"applicant": $applicants.@rid}]
-      `, {
+      `, 
+        // return [{ "certification": $certifications["@rid"] }]
+      {
         class: 's',
         params: {
           // Certification Request
@@ -84,6 +95,10 @@ class PoliceClearanceCertifications {
           middleName,
           lastName,
           fullName: `${lastName} ${firstName} ${middleName}`,
+          applicantIDPhoto,
+          applicantSignature,
+          applicantFingerPrintLeft: leftThumb,
+          applicantFingerPrintRight: rightThumb,
 
           // Address
           address1,
