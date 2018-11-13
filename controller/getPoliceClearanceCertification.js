@@ -30,7 +30,6 @@ function constructCertificationData([entry]) {
   };
 
   const [dataApplicant] = entry.applicant;
-  console.log(dataApplicant.applicantFingerPrint);
   const applicant = {
     '@rid': dataApplicant && dataApplicant['@rid'],
     fullName: dataApplicant && dataApplicant.fullName,
@@ -53,7 +52,7 @@ module.exports = (req, res, next) => {
 
     getPoliceClrCertification(body.id)
     .then(result => {
-      // console.log(result);
+      console.log(result);
       resJSON.default(OK, {data: result}, res);
     })
     .catch(err => {

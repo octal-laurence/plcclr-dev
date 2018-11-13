@@ -12,20 +12,39 @@ function newPoliceClearanceCertifications({
   stationName,
   purpose,
   remarks,
+
   firstName,
   middleName,
   lastName,
+  suffix,
+  gender,
+  civilStatus,
+  citizenship,
+  dateBirth,
+  birthPlace,
+  religion,
+  height,
+  weight,
+  contactNumber,
+  occupation,
+  certResidency,
+  certResidencyIssuedAt,
+  ctcIssuedDate,
+
   address1,
   address2,
+  barangay,
   city,
   province,
   postalCode,
+
   applicantIDPhoto,
   applicantSignature,
   applicantFingerPrint,
 }) {
   const plcclr = new DB.Plcclr();
-  
+  let clearanceCertification;
+
   return new Promise((resolve, reject) => {
     plcclr.policeClearanceCertifications()
     .then(comm => comm.newRecord({
@@ -34,14 +53,32 @@ function newPoliceClearanceCertifications({
       stationName,
       purpose,
       remarks,
+
       firstName,
       middleName,
       lastName,
+      suffix,
+      gender,
+      civilStatus,
+      citizenship,
+      dateBirth,
+      birthPlace,
+      religion,
+      height,
+      weight,
+      contactNumber,
+      occupation,
+      certResidency,
+      certResidencyIssuedAt,
+      ctcIssuedDate,
+
       address1,
       address2,
+      barangay,
       city,
       province,
       postalCode,
+
       applicantIDPhoto,
       applicantSignature,
       applicantFingerPrint: {
@@ -49,25 +86,26 @@ function newPoliceClearanceCertifications({
         rightThumb: '',
       },
     }))
-    .then(result => {
-      const applicantOwner = `${firstName}${new Date().getTime().toString()}`;
+    .then(([{certification}, {applicant}]) => {
+      clearanceCertification = [{certification}, {applicant}];
+      const applicantID = applicant['@rid'].toString().split("#")[1].replace(':', '-');
       const fingerPrints = Object.entries(applicantFingerPrint)
                             .map(([k, v]) => ({
-                              applicant: applicantOwner,
+                              applicant: applicantID,
                               thumb: k,
                               base64: v,
                             }));
 
       return bluebird.map(fingerPrints, writeFingerPrintImage);
     })
-    .then(result => resolve(result))
+    .then(result => resolve(clearanceCertification))
     .catch(err => reject(err));
   }); 
 }
 
 function writeFingerPrintImage({applicant, thumb, base64}) {
   return new Promise((resolve, reject) => {
-    const fileName = `${new Date().getTime().toString()}${thumb}.png`;
+    const fileName = `${thumb}.png`;
     const path = `./public/fingerPrints/${applicant}`;
 
     fsExtra.outputFile(`${path}/${fileName}`, new Buffer(base64, 'base64'), (err) => {

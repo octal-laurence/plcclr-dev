@@ -55,7 +55,7 @@ exports.create = req => {
 exports.list = req => {
   return [
     check('fullName')
-    .isString(),
+    .custom(custom.isString),
 
     check('dateCreated')
     .custom(custom.isDate),

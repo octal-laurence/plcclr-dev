@@ -22,14 +22,32 @@ class PoliceClearanceCertifications {
     stationName,
     purpose,
     remarks = '',
+
     firstName,
     middleName,
     lastName,
+    suffix,
+    gender,
+    civilStatus,
+    citizenship,
+    dateBirth,
+    birthPlace,
+    religion,
+    height,
+    weight,
+    contactNumber,
+    occupation,
+    certResidency,
+    certResidencyIssuedAt,
+    ctcIssuedDate,
+
     address1,
-    address2 = '',
+    address2,
+    barangay,
     city,
     province,
     postalCode,
+
     applicantIDPhoto,
     applicantSignature,
     applicantFingerPrint,
@@ -43,11 +61,11 @@ class PoliceClearanceCertifications {
         let certifications = INSERT INTO ${this._tbl} SET ${`
           machineId = :machineId,
           station = :station,
-          purpose = :purpose,
           stationName = :stationName,
-          remarks = :remarks,
           dateCreated = :dateCreated,
           dateUpdated = :dateUpdated,
+          purpose = :purpose,
+          remarks = :remarks,
           status = :status
         `.replace(/\n/g, '')}
         let applicants = INSERT INTO ${this._applicants.tbl} SET ${`
@@ -55,16 +73,29 @@ class PoliceClearanceCertifications {
           firstName = :firstName,
           middleName = :middleName,
           lastName = :lastName,
+          suffix = :suffix,
           fullName = :fullName,
+          gender = :gender,
+          civilStatus = :civilStatus,
+          citizenship = :citizenship,
+          dateBirth = :dateBirth,
+          birthPlace = :birthPlace,
+          religion = :religion,
+          height = :height,
+          weight = :weight,
+          contactNumber = :contactNumber,
+          occupation = :occupation,
+          certResidency = :certResidency,
+          certResidencyIssuedAt = :certResidencyIssuedAt,
+          ctcIssuedDate = :ctcIssuedDate,
           applicantIDPhoto = :applicantIDPhoto,
-          applicantSignature = :applicantSignature,
-          applicantFingerPrintLeft = :applicantFingerPrintLeft,
-          applicantFingerPrintRight = :applicantFingerPrintRight
+          applicantSignature = :applicantSignature
         `.replace(/\n/g, '')}
         let address = INSERT INTO ${this._address.tbl} SET ${`
           applicantId = $applicants.@rid,
           address1 = :address1,
           address2 = :address2,
+          barangay = :barangay,
           city = :city,
           province = :province,
           postalCode = :postalCode
@@ -73,39 +104,48 @@ class PoliceClearanceCertifications {
         commit;
 
         return [{"certification": $certifications.@rid}, {"applicant": $applicants.@rid}]
-      `, 
-        // return [{ "certification": $certifications["@rid"] }]
-      {
+      `, {
         class: 's',
         params: {
           // Certification Request
           machineId,
           station,
-          purpose,
           stationName,
+          purpose,
           remarks,
-          ...{
-            dateCreated: dateRecord,
-            dateUpdated: dateRecord,
-            status: 'OPEN'
-          },
+          dateCreated: dateRecord,
+          dateUpdated: dateRecord,
+          status: 'OPEN',
 
           // Applicant
           firstName,
           middleName,
           lastName,
+          suffix,
           fullName: `${lastName} ${firstName} ${middleName}`,
+          gender,
+          civilStatus,
+          citizenship,
+          dateBirth,
+          birthPlace,
+          religion,
+          height,
+          weight,
+          contactNumber,
+          occupation,
+          certResidency,
+          certResidencyIssuedAt,
+          ctcIssuedDate,         
           applicantIDPhoto,
           applicantSignature,
-          applicantFingerPrintLeft: leftThumb,
-          applicantFingerPrintRight: rightThumb,
 
           // Address
           address1,
           address2,
+          barangay,
           city,
           province,
-          postalCode,
+          postalCode
         }
       })
       .then(newCert => {

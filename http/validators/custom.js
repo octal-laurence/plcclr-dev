@@ -11,3 +11,10 @@ exports.isInteger = input => {
   }
   return true;
 }
+
+exports.isString = input => {
+  if (input && (typeof input) !== 'string') {
+    return false;
+  }
+  return true;
+}
