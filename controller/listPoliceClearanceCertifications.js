@@ -30,11 +30,11 @@ function constructCertificationList(list) {
       '@rid': data['@rid'],
       machineId: data.machineId,
       dateCreated: data.dateCreated,
-      purpose: data.purpose,
+      dateUpdated: data.dateUpdated,
       station: data.station,
       stationName: data.stationName,
+      purpose: data.purpose,
       remarks: data.remarks,
-      dateUpdated: data.dateUpdated,
       status: data.status
     };
 

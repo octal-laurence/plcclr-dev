@@ -5,6 +5,7 @@ const address = require('./address');
 
 // EDGES
 const edgePoliceClearanceCertifications = require('../edges/policeClearanceCertificationApplicants')
+const edgeApplicantsAddress = require('../edges/ApplicantsAddress')
 
 class PoliceClearanceCertifications {
   constructor(database) {
@@ -15,6 +16,7 @@ class PoliceClearanceCertifications {
     this._applicants = applicants;
 
     this._edgePoliceClearanceCertifications = edgePoliceClearanceCertifications;
+    this._edgeApplicantsAddress = edgeApplicantsAddress;
   }
   newRecord({
     machineId,
@@ -101,6 +103,7 @@ class PoliceClearanceCertifications {
           postalCode = :postalCode
         `.replace(/\n/g, '')}
         let edgeCertificationApplicants = CREATE EDGE ${this._edgePoliceClearanceCertifications.tbl} FROM $applicants.@rid TO $certifications.@rid SET dateCreated = :dateCreated
+        let edgeApplicantsAddress = CREATE EDGE ${this._edgeApplicantsAddress.tbl} FROM $address.@rid TO $applicants.@rid
         commit;
 
         return [{"certification": $certifications.@rid}, {"applicant": $applicants.@rid}]
@@ -197,12 +200,15 @@ class PoliceClearanceCertifications {
   getRecordOf(rid) {
     return new Promise((resolve, reject) => {
       this._db.query(`
-        SELECT IN('${this._edgePoliceClearanceCertifications.tbl}') as applicant, * FROM ${rid}
+        SELECT 
+        IN('${this._edgePoliceClearanceCertifications.tbl}') as applicant, 
+        IN('${this._edgePoliceClearanceCertifications.tbl}').IN('${this._edgeApplicantsAddress.tbl}') as address, 
+        * FROM ${rid} 
         FETCHPLAN *:1
       `)
-      .then(result => {
+      .then(certification => {
         this._db.close();
-        resolve(result);
+        resolve(certification);
       })
       .catch(err => {
         this._db.close();
