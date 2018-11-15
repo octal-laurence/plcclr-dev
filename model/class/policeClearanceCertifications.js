@@ -5,7 +5,7 @@ const address = require('./address');
 
 // EDGES
 const edgePoliceClearanceCertifications = require('../edges/policeClearanceCertificationApplicants')
-const edgeApplicantsAddress = require('../edges/ApplicantsAddress')
+const edgeApplicantsAddress = require('../edges/applicantsAddress')
 
 class PoliceClearanceCertifications {
   constructor(database) {
