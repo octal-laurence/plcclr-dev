@@ -8,7 +8,7 @@
     "host": "ec2-54-189-181-33.us-west-2.compute.amazonaws.com",
     "portBinary": 3000,
     "portHttp": 3100,
-    "name": "plcclr-dev1",
+    "db": "plcclr-dev1",
     "username": "admin",
     "password": "admin"
   }

@@ -1,1 +1,6 @@
-{}
+{
+  "certificationStatus": {
+    "closed": "CLOSED",
+    "open": "OPEN"
+  }
+}

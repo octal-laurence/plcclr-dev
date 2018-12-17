@@ -1,8 +1,11 @@
+const config = require('config');
 const {validationResult} = require('express-validator/check');
 const {OK} = require('http-status-codes');
 
 const DB = require('../model/plcclr');
 const resJSON = require('../http/resJSON');
+
+const certificationStatus = config.get('certificationStatus');
 
 function listPoliceClearanceCertifications({
   fullName,
@@ -14,10 +17,11 @@ function listPoliceClearanceCertifications({
     const plcclr = new DB.Plcclr();
 
     plcclr.policeClearanceCertifications()
-    .then(comm => comm.listRecords({
+    .listRecords({
       fullName,
-      dateCreated
-    }, pgSkip, pgLimit))
+      dateCreated,
+      status: certificationStatus.open,
+    }, pgSkip, pgLimit)
     .then(constructCertificationList) 
     .then(certificationList => resolve(certificationList))
     .catch(err => reject(err));
@@ -63,11 +67,12 @@ module.exports = (req, res, next) => {
     const {body} = req;
     listPoliceClearanceCertifications(body)
     .then(result => {
-      console.log(result);
+      console.log('success');
       resJSON.default(OK, {data: result}, res);
     })
     .catch(err => {
       console.log(err);
+      console.log('error');
       resJSON.errorServer({error: err.message}, res);
     });
   } else {

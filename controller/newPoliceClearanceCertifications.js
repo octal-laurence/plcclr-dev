@@ -46,8 +46,9 @@ function newPoliceClearanceCertifications({
   let clearanceCertification;
 
   return new Promise((resolve, reject) => {
-    plcclr.policeClearanceCertifications()
-    .then(comm => comm.newRecord({
+    plcclr
+    .policeClearanceCertifications()
+    .newRecord({
       machineId,
       station,
       stationName,
@@ -85,10 +86,13 @@ function newPoliceClearanceCertifications({
         leftThumb: '',
         rightThumb: '',
       },
-    }))
+    })
     .then(([{certification}, {applicant}]) => {
-      clearanceCertification = [{certification}, {applicant}];
-      const applicantID = applicant['@rid'].toString().split("#")[1].replace(':', '-');
+      const [ridCertification] = certification;
+      const [ridApplicant] = applicant;
+
+      clearanceCertification = [{certification: {'@rid': ridCertification}}, {applicant: {'@rid': ridApplicant}}];
+      const applicantID = ridApplicant.toString().split("#")[1].replace(':', '-');
       const fingerPrints = Object.entries(applicantFingerPrint)
                             .map(([k, v]) => ({
                               applicant: applicantID,
@@ -122,9 +126,9 @@ module.exports = (req, res, next) => {
   const validatorError = validationResult(req);
   if (validatorError.isEmpty()) {
     const {body} = req;
+
     newPoliceClearanceCertifications(body)
     .then(result => {
-      console.log(result);
       console.log('success');
       resJSON.default(OK, {data: result}, res);
     })

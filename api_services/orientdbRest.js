@@ -5,12 +5,12 @@ class DB {
   constructor(opt={}) {
     this._dbRef = config.get('orientdb');
   }
-  createRequest(type="command") {
-    const { host, portHttp, name, username, password } = this._dbRef;
+  createRequest(type='command', opts = '') {
+    const { host, portHttp, db, username, password } = this._dbRef;
     const auth = `Basic ${new Buffer(`${username}:${password}`).toString("base64")}`;
 
     return {
-      url: `http://${host}:${portHttp}/${type}/${name}/${(type === 'command') ? `sql`: ''}`, 
+      url: `http://${host}:${portHttp}/${type}/${db}/${opts}`, 
       headers: {
         Authorization: auth,
       }
@@ -18,7 +18,7 @@ class DB {
   }
   commandQuery(command, parameters = {}) {
     return rp.post({
-      ...this.createRequest('command'),
+      ...this.createRequest(`command`, `sql`),
       json: {
         command,
         parameters,
@@ -27,17 +27,40 @@ class DB {
   }
   commandBatch(commands, parameters = {}) {
     return rp.post({
-      ...this.createRequest('batch'),
+      ...this.createRequest(`batch`),
       json: {
         transaction: true,
         operations: [{
           type: "script",
           language: "sql",
-          script: commands
+          script: ((arrayCommands) => {
+            if (Object.entries(parameters).length <= 0) {
+              return arrayCommands
+            }
+            const newCommands = arrayCommands.map(command => {
+              Object.entries(parameters)
+              .map(([k, v]) => {
+                command = command.replace(`:${k}`, `'${v}'`)
+              })
+              return command;
+            })
+            
+            return newCommands;
+          })(commands),
         }],
-        parameters
       }
     })
+  }
+  documentGet(rid) {
+    const [, id] = rid.split("#");
+    return rp.get({
+      ...this.createRequest(`document`, `${id}/*:-1`),
+    });
+  }
+  queryGet(sqlQuery, paramaters) {
+    return rp.get({
+      ...this.createRequest(`query`, `sql/${sqlQuery}`)
+    });
   }
   testpost() {
     const auth = `Basic ${new Buffer(`root:iZl4w0ZMWsupfSSFbuWFMZk7kIMC6Aa/buiNmdogWm8=`).toString("base64")}`;
@@ -57,6 +80,25 @@ class DB {
       console.log(err);
       console.log("error");
     })
+  }
+  testGet() {
+    const { host, portHttp, db, username, password } = this._dbRef;
+    const auth = `Basic ${new Buffer(`${username}:${password}`).toString("base64")}`;
+
+    rp.get({
+      url: `http://${host}:${portHttp}/document/${db}/12:174/*:1`, 
+      headers: {
+        Authorization: auth,
+      }
+    })
+    .then(result => {
+      console.log(result);
+      console.log("success");
+    })
+    .catch(err => {
+      console.log(err);
+      console.log("error");
+    }); 
   }
 }
 

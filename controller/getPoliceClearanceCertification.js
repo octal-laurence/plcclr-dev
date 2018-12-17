@@ -11,15 +11,11 @@ function getPoliceClrCertification(id) {
     const plcclr = new DB.Plcclr();
 
     plcclr.policeClearanceCertifications()
-    .then(comm => comm.getRecordOf(id))
+    .getRecordOf(id)
     .then(getFingerPrintImages)
     .then(constructCertificationData)
     .then(certificationsEntry => resolve(certificationsEntry))
     .catch(err => reject(err));
-    // .then(data => {
-    //   console.log(data[0][0]);
-    //   return data;
-    // })
   });
 }
 
@@ -105,9 +101,12 @@ module.exports = (req, res, next) => {
 
     getPoliceClrCertification(body.id)
     .then(result => {
+      console.log('success');
       resJSON.default(OK, {data: result}, res);
     })
     .catch(err => {
+      console.log(err);
+      console.log('error');
       resJSON.errorServer({error: err.message}, res);
     });
   } else {
