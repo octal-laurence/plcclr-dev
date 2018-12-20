@@ -1,3 +1,4 @@
+const config = require('config');
 const helper = require('../../helper/util');
 
 const applicants = require('./applicants');
@@ -101,16 +102,16 @@ class PoliceClearanceCertifications {
      postalCode
     }
     const commands = [`
-        let certifications = INSERT INTO ${this._tbl} SET ${`
-          machineId = :machineId,
-          station = :station,
-          stationName = :stationName,
-          dateCreated = :dateCreated,
-          dateUpdated = :dateUpdated,
-          purpose = :purpose,
-          remarks = :remarks,
-          status = :status
-        `.replace(/\n/g, '')}
+      let certifications = INSERT INTO ${this._tbl} SET ${`
+        machineId = :machineId,
+        station = :station,
+        stationName = :stationName,
+        dateCreated = :dateCreated,
+        dateUpdated = :dateUpdated,
+        purpose = :purpose,
+        remarks = :remarks,
+        status = :status
+      `.replace(/\n/g, '')}
     `, `
       let applicants = INSERT INTO ${this._applicants.tbl} SET ${`
         plcclrId = $certifications.@rid,
@@ -162,6 +163,16 @@ class PoliceClearanceCertifications {
       .catch(err => {
         reject(err);
       });
+    });
+  }
+  updateStatus(id, status) {
+    const certificationStatus = config.get('certificationStatus');
+    
+    return this._db.commandQuery(`
+      UPDATE ${this._tbl} SET status = :status WHERE @rid = :id
+    `, {
+      id: id,
+      status: certificationStatus[status] || certificationStatus[`open`],
     });
   }
   getRecordOf(rid) {

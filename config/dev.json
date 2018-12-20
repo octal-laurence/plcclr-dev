@@ -7,7 +7,7 @@
   "orientdb": {
     "host": "ec2-54-189-181-33.us-west-2.compute.amazonaws.com",
     "portBinary": 3000,
-    "portHttp": 3100,
+    "portHttp": 3000,
     "db": "plcclr-dev1",
     "username": "admin",
     "password": "admin"

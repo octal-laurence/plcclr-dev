@@ -17,6 +17,7 @@ class DB {
     };
   }
   commandQuery(command, parameters = {}) {
+    console.log(parameters);
     return rp.post({
       ...this.createRequest(`command`, `sql`),
       json: {

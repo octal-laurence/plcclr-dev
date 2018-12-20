@@ -75,3 +75,11 @@ exports.getRecord = req => {
         .isString()
     ];
 }
+
+exports.grantCertificate = req => {
+    return [
+        check('plcclrId')
+        .exists()
+        .isString()
+    ];
+}
