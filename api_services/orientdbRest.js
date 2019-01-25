@@ -1,23 +1,29 @@
 const config = require('config');
 const rp = require('request-promise');
+const fs = require('fs');
+const path = require('path');
 
 class DB {
   constructor(opt={}) {
     this._dbRef = config.get('orientdb');
   }
   createRequest(type='command', opts = '') {
-    const { host, portHttp, db, username, password } = this._dbRef;
+    const { apiURL, db, username, password } = this._dbRef;
     const auth = `Basic ${new Buffer(`${username}:${password}`).toString("base64")}`;
 
     return {
-      url: `http://${host}:${portHttp}/${type}/${db}/${opts}`, 
+      url: `${apiURL}/${type}/${db}/${opts}`, 
       headers: {
         Authorization: auth,
-      }
+      },
+      rejectUnauthorized: true,
+      ca: fs.readFileSync('credentials/orientdb/client1.ca.pem'),
+      key: fs.readFileSync('credentials/orientdb/client1.pem'),
+      cert: fs.readFileSync('credentials/orientdb/client1.pem'),
+      passphrase: 'octaltech'
     };
   }
   commandQuery(command, parameters = {}) {
-    console.log(parameters);
     return rp.post({
       ...this.createRequest(`command`, `sql`),
       json: {

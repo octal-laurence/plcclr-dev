@@ -2,7 +2,7 @@ const { check, validationResult } = require('express-validator/check');
 
 const custom = require('./custom');
 
-exports.create = req => {
+exports.newApplicationEntry = req => {
   return [
     check('machineId')
     .exists()
@@ -52,7 +52,7 @@ exports.create = req => {
   ];
 }
 
-exports.list = req => {
+exports.listApplicationEntries = req => {
   return [
     check('fullName')
     .custom(custom.isString),
@@ -68,7 +68,7 @@ exports.list = req => {
   ];
 }
 
-exports.getRecord = req => {
+exports.getApplicationEntry = req => {
     return [
         check('id')
         .exists()

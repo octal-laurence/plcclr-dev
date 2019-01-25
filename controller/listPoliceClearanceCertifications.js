@@ -30,8 +30,11 @@ function listPoliceClearanceCertifications({
 
 function constructCertificationList(list) {
   const plcclrCertifications = list.map((data) => {
+    const inStringRID = data['@rid'].toString();
+    const [,inViewRID] = inStringRID.split('#');
+
     const certification = {
-      '@rid': data['@rid'],
+      '@rid': inViewRID,
       machineId: data.machineId,
       dateCreated: data.dateCreated,
       dateUpdated: data.dateUpdated,

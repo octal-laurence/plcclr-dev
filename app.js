@@ -24,7 +24,7 @@ var policeClearanceCertification = require('./routes/policeClearanceCertificatio
 app.use(headerCORS);
 app.use(headersAuthorization);
 app.use('/', indexRouter);
-app.use('/PoliceClearanceCertification', policeClearanceCertification);
+app.use('/certification', policeClearanceCertification);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
