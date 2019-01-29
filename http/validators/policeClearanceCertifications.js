@@ -77,9 +77,49 @@ exports.getApplicationEntry = req => {
 }
 
 exports.grantCertificate = req => {
-    return [
-        check('plcclrId')
-        .exists()
-        .isString()
-    ];
+  return [
+    check('plcclrId')
+    .exists()
+    .isString(),
+    check('verifiedBy')
+    .exists()
+    .custom((input) => {
+      if (input && (typeof input !== 'object')) {
+        return false;
+      }
+      return true;
+    })
+    .custom((input) => {
+      if (!input.hasOwnProperty('id')) {
+        return false
+      }
+      if (!input.hasOwnProperty('name')) {
+        return false
+      }
+      if (!input.hasOwnProperty('title')) {
+        return false
+      }
+      return true;
+    }),
+    check('certifiedBy')
+    .exists()
+    .custom((input) => {
+      if (input && (typeof input !== 'object')) {
+        return false;
+      }
+      return true;
+    })
+    .custom((input) => {
+      if (!input.hasOwnProperty('id')) {
+        return false
+      }
+      if (!input.hasOwnProperty('name')) {
+        return false
+      }
+      if (!input.hasOwnProperty('title')) {
+        return false
+      }
+      return true;
+    })
+  ];
 }

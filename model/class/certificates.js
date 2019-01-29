@@ -22,10 +22,10 @@ class Certificates {
     station,
     applicantId,
     findings,
-    approvedBy,
-    issuedBy,
-    dateApproved,
-    dateIssued,
+    verifiedBy,
+    certifiedBy,
+    dateVerified,
+    dateCertified,
     validity,
   }) {
     const certificationStatus = config.get('certificationStatus');
@@ -38,10 +38,10 @@ class Certificates {
       station = :station,
       applicantId = (select from ${applicantId}),
       findings = :findings,
-      approvedBy = :approvedBy,
-      issuedBy = :issuedBy,
-      dateApproved = :dateApproved,
-      dateIssued = :dateIssued,
+      verifiedBy = ${JSON.stringify(verifiedBy)},
+      certifiedBy = ${JSON.stringify(certifiedBy)},
+      dateVerified = :dateVerified,
+      dateCertified = :dateCertified,
       validity = :validity
     `, `
       let certificationEntry = UPDATE ${this._policeClearanceCertifications.tbl} SET 
@@ -49,19 +49,18 @@ class Certificates {
       WHERE @rid = ${plcclrId}
     `,`
       return [{certificates: $certificates}]
-    `], {
-      plcclrId,
-      machineId,
-      station,
-      applicantId,
-      findings,
-      approvedBy,
-      issuedBy,
-      status: certificationStatus[`granted`],
-      dateApproved: dateRecord,
-      dateIssued: dateRecord,
-      validity: dateRecord,
-    });
+    `],
+      { plcclrId,
+        machineId,
+        station,
+        applicantId,
+        findings,
+        status: certificationStatus[`granted`],
+        dateVerified: dateRecord,
+        dateCertified: dateRecord,
+        validity: dateRecord
+      }
+    );
   }
 }
 

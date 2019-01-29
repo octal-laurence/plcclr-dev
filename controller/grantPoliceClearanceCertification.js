@@ -11,8 +11,8 @@ function grantCertifications({
   station,
   applicantId,
   findings,
-  approvedBy,
-  issuedBy,
+  verifiedBy,
+  certifiedBy,
 }) {
   return new Promise((resolve, reject) => {
     const plcclr = new DB.Plcclr();
@@ -23,8 +23,8 @@ function grantCertifications({
       station,
       applicantId,
       findings,
-      approvedBy,
-      issuedBy,
+      verifiedBy,
+      certifiedBy,
     })
     .then(result => resolve(result))
     .catch(err => reject(err));
