@@ -3,6 +3,7 @@ const router = express.Router();
 
 // controller
 const controllerNewPoliceClrCertifications = require('../controller/newPoliceClearanceCertifications');
+const controllerEditPoliceClrCertifications = require('../controller/editPoliceClearanceCertifications');
 const controllerListPoliceClrCertifications = require('../controller/listPoliceClearanceCertifications');
 const controllerGetPoliceClrCertification = require('../controller/getPoliceClearanceCertification');
 const controllerGrantPoliceClrCertification = require('../controller/grantPoliceClearanceCertification');
@@ -11,6 +12,7 @@ const controllerGrantPoliceClrCertification = require('../controller/grantPolice
 const validatorPoliceClrCertifications = require('../http/validators/policeClearanceCertifications');
 
 router.post('/newApplicationEntry', validatorPoliceClrCertifications.newApplicationEntry(), controllerNewPoliceClrCertifications);
+router.post('/editApplicationEntry', validatorPoliceClrCertifications.editApplicationEntry(), controllerEditPoliceClrCertifications);
 router.post('/listApplicationEntries', validatorPoliceClrCertifications.listApplicationEntries(), controllerListPoliceClrCertifications);
 router.post('/getApplicationEntry', validatorPoliceClrCertifications.getApplicationEntry(), controllerGetPoliceClrCertification);
 router.post('/grantCertificate', validatorPoliceClrCertifications.grantCertificate(), controllerGrantPoliceClrCertification);

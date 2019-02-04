@@ -89,7 +89,7 @@ class DB {
     })
   }
   testGet() {
-    const { host, portHttp, db, username, password } = this._dbRef;
+    const { apiURL, db, username, password } = this._dbRef;
     const auth = `Basic ${new Buffer(`${username}:${password}`).toString("base64")}`;
 
     rp.get({

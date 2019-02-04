@@ -165,6 +165,152 @@ class PoliceClearanceCertifications {
       });
     });
   }
+  deleteRecord(id) {
+    const commands = [`
+      let certifications = SELECT FROM ${this._tbl} WHERE @rid = ${id}
+    `/*,`
+      let delEdgePoliceClearanceCertifications = DELETE EDGE E WHERE @rid IN (SELECT in_certificationApplicants[0] FROM ${this._tbl} WHERE @rid = ${id}) 
+    `, `
+      let del
+    `*/,`
+      return $certifications[0].in_certificationApplicants[0]
+    `,]
+
+    // return this._db.commandBatch(`SELECT in_certificationApplicants[0] FROM ${this._tbl} WHERE @rid = ${id}`);
+    return this._db.commandBatch(commands);
+  }
+  updateRecord(id, {
+    machineId,
+    station,
+    stationName,
+    purpose,
+    remarks,
+
+    firstName,
+    middleName,
+    lastName,
+    suffix,
+    gender,
+    civilStatus,
+    citizenship,
+    dateBirth,
+    birthPlace,
+    religion,
+    height,
+    weight,
+    contactNumber,
+    occupation,
+    certResidency,
+    certResidencyIssuedAt,
+    ctcIssuedDate,
+
+    address1,
+    address2,
+    barangay,
+    city,
+    province,
+    postalCode,
+
+    applicantIDPhoto,
+    applicantSignature,
+    applicantFingerPrint,
+  }) {
+    const dateRecord = helper.dateMoment(new Date(), helper.dateFormat.orientdb);
+    const commands = [`
+      let certifications = UPDATE ${this._tbl} SET ${`
+        machineId = :machineId,
+        station = :station,
+        stationName = :stationName,
+        dateUpdated = :dateUpdated,
+        purpose = :purpose,
+        remarks = :remarks
+      `.replace(/\n/g, '')} 
+      WHERE @rid = ${id}
+    `, `
+      let getCertifications = SELECT EXPAND(IN('${this._edgePoliceClearanceCertifications.tbl}')) FROM ${this._tbl} WHERE @rid = ${id}
+    `, `
+      let applicants = UPDATE ${this._applicants.tbl} SET ${`
+        firstName = :firstName,
+        middleName = :middleName,
+        lastName = :lastName,
+        suffix = :suffix,
+        fullName = :fullName,
+        gender = :gender,
+        civilStatus = :civilStatus,
+        citizenship = :citizenship,
+        dateBirth = :dateBirth,
+        birthPlace = :birthPlace,
+        religion = :religion,
+        height = :height,
+        weight = :weight,
+        contactNumber = :contactNumber,
+        occupation = :occupation,
+        certResidency = :certResidency,
+        certResidencyIssuedAt = :certResidencyIssuedAt,
+        ctcIssuedDate = :ctcIssuedDate,
+        applicantIDPhoto = :applicantIDPhoto,
+        applicantSignature = :applicantSignature,
+        address1 = :address1,
+        address2 = :address2,
+        barangay = :barangay,
+        city = :city,
+        province = :province,
+        postalCode = :postalCode
+      `.replace(/\n/g, '')} 
+      WHERE @rid in $getCertifications.@rid
+    `, `
+      return {certification: ${id}, applicant: $getCertifications[0].@rid}
+    `];
+
+    const parameters = {
+      machineId,
+      station,
+      stationName,
+      purpose,
+      remarks,
+      dateUpdated: dateRecord,
+    
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+      fullName: `${lastName} ${firstName} ${middleName}`,
+      gender,
+      civilStatus,
+      citizenship,
+      dateBirth,
+      birthPlace,
+      religion,
+      height,
+      weight,
+      contactNumber,
+      occupation,
+      certResidency,
+      certResidencyIssuedAt,
+      ctcIssuedDate,         
+      applicantIDPhoto,
+      applicantSignature,
+
+      // Address
+      address1,
+      address2,
+      barangay,
+      city,
+      province,
+      postalCode 
+    };
+
+    return new Promise((resolve, reject) => {
+      this._db.commandBatch(commands, parameters)
+      .then(({result}) => {
+        const [{value}] = result
+        resolve(value);
+      })
+      .catch(err => {
+        reject(err);
+      });
+    });
+  }
   updateStatus(id, status) {
     const certificationStatus = config.get('certificationStatus');
     

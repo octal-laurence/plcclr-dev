@@ -39,7 +39,7 @@ function getFingerPrintImages([entry]) {
 
 function constructCertificationData([entry, fingerPrints]) {
   const plcclrCertification = {
-    '@rid': entry['@rid'],
+    '@rid': entry['@rid'].toString().split('#')[1],
     machineId: entry.machineId,
     station: entry.station,
     stationName: entry.stationName,
@@ -52,7 +52,7 @@ function constructCertificationData([entry, fingerPrints]) {
 
   const [dataApplicant] = entry.applicant;
   const applicant = {
-    '@rid': dataApplicant && dataApplicant['@rid'],
+    '@rid': dataApplicant && dataApplicant['@rid'].toString().split('#')[1],
     fullName: dataApplicant && dataApplicant.fullName,
     firstName: dataApplicant && dataApplicant.firstName,
     lastName: dataApplicant && dataApplicant.lastName,
@@ -63,10 +63,22 @@ function constructCertificationData([entry, fingerPrints]) {
     citizenship: dataApplicant && dataApplicant.citizenship,
     dateBirth: dataApplicant && dataApplicant.dateBirth,
     birthPlace: dataApplicant && dataApplicant.birthPlace,
+    religion: dataApplicant && dataApplicant.religion,
     height: dataApplicant && dataApplicant.height,
     weight: dataApplicant && dataApplicant.weight,
     applicantIDPhoto: dataApplicant && dataApplicant.applicantIDPhoto,
     applicantSignature: dataApplicant && dataApplicant.applicantSignature,
+    address1: 'address1',
+    address2: 'address1',
+    barangay: 'barangay',
+    city: 'city',
+    province: 'province',
+    postalCode: '1850',
+    occupation: dataApplicant && dataApplicant.occupation,
+    contactNumber: dataApplicant && dataApplicant.contactNumber,
+    certResidency: dataApplicant && dataApplicant.certResidency,
+    certResidencyIssuedAt: dataApplicant && dataApplicant.certResidencyIssuedAt,
+    ctcIssuedDate: dataApplicant && dataApplicant.ctcIssuedDate,
   };
   const applicantFingerPrints = fingerPrints.reduce((obj, item) => {
                                   obj[item.label] = item.dataURI

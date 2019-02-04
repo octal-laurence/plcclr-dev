@@ -17,11 +17,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // routes
-var headerCORS = require('./http/headerCORS');
+var headersCORS = require('./http/headersCORS');
 var headersAuthorization = require('./http/headersAuthorization');
 var indexRouter = require('./routes/index');
 var policeClearanceCertification = require('./routes/policeClearanceCertification');
-app.use(headerCORS);
+app.use(headersCORS);
 app.use(headersAuthorization);
 app.use('/', indexRouter);
 app.use('/certification', policeClearanceCertification);

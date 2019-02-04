@@ -68,6 +68,10 @@ exports.listApplicationEntries = req => {
   ];
 }
 
+exports.editApplicationEntry = req => {
+  return [];
+}
+
 exports.getApplicationEntry = req => {
     return [
         check('id')
