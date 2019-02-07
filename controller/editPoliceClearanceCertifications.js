@@ -138,17 +138,3 @@ module.exports = (req, res, next) => {
     resJSON.errorInput({error: validatorError.mapped()}, res);
   }
 }
-
-const plcclr = new DB.Plcclr();
-plcclr
-.policeClearanceCertifications()
-.deleteRecord(`#12:188`)
-.then(result => {
-  console.log(result);
-  console.log('success');
-})
-.catch(err => {
-  console.log(err);
-  console.log(err.message);
-  console.log('error');
-})

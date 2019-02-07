@@ -11,6 +11,7 @@ function grantCertifications({
   station,
   applicantId,
   findings,
+  purpose,
   verifiedBy,
   certifiedBy,
 }) {
@@ -23,10 +24,11 @@ function grantCertifications({
       station,
       applicantId,
       findings,
+      purpose,
       verifiedBy,
       certifiedBy,
     })
-    .then(result => resolve(result))
+    .then(([result]) => resolve(result))
     .catch(err => reject(err));
   });
 }
@@ -47,6 +49,7 @@ module.exports = (req, res, next) => {
       resJSON.errorServer({error: err.message}, res);
     })
   } else {
-    resJSON.errorServer({error: validatorError.mapped()}, res);
+    console.log(validatorError.mapped());
+    resJSON.errorInput({error: validatorError.mapped()}, res);
   }
 };

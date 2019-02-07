@@ -69,7 +69,65 @@ exports.listApplicationEntries = req => {
 }
 
 exports.editApplicationEntry = req => {
-  return [];
+  return [
+    check('id')
+    .exists()
+    .isString(),
+    
+    check('machineId')
+    .exists()
+    .isString(),
+
+    check('station')
+    .exists()
+    .isString(),
+
+    check('stationName')
+    .exists()
+    .isString(),
+
+    check('purpose')
+    .exists()
+    .isString(),
+
+    check('firstName')
+    .exists()
+    .isString(),
+
+    check('middleName')
+    .isString(),
+
+    check('lastName')
+    .exists()
+    .isString(),
+
+    check('address1')
+    .exists()
+    .isString(),
+
+    check('address2')
+    .isString(),
+
+    check('city')
+    .exists()
+    .isString(),
+
+    check('province')
+    .exists()
+    .isString(),
+
+    check('postalCode')
+    .exists()
+    .isString()
+  ];
+}
+
+exports.deleteApplicationEntry = req => {
+  return [
+    check('id')
+    .exists()
+    .isString()
+  ];
 }
 
 exports.getApplicationEntry = req => {
@@ -125,5 +183,13 @@ exports.grantCertificate = req => {
       }
       return true;
     })
+  ];
+}
+
+exports.getCertificate = req => {
+  return [
+    check('id')
+    .exists()
+    .isString()
   ];
 }

@@ -166,17 +166,21 @@ class PoliceClearanceCertifications {
     });
   }
   deleteRecord(id) {
-    const commands = [`
-      let certifications = SELECT FROM ${this._tbl} WHERE @rid = ${id}
-    `/*,`
-      let delEdgePoliceClearanceCertifications = DELETE EDGE E WHERE @rid IN (SELECT in_certificationApplicants[0] FROM ${this._tbl} WHERE @rid = ${id}) 
-    `, `
-      let del
-    `*/,`
-      return $certifications[0].in_certificationApplicants[0]
-    `,]
+    const commands = [
+        `
+        let getEdgeCertificationsApplicants = SELECT EXPAND(IN('${this._edgePoliceClearanceCertifications.tbl}')) FROM ${this._tbl} WHERE @rid = ${id}
+      `
+      , `
+        let delCertification = DELETE VERTEX FROM ${this._tbl} WHERE @rid = ${id}
+      `
+      , `
+        let delApplicant = DELETE VERTEX FROM ${this._applicants.tbl} WHERE @rid IN $getEdgeCertificationsApplicants.@rid
+      `
+      ,`
+        return $delApplicant
+      `
+    ];
 
-    // return this._db.commandBatch(`SELECT in_certificationApplicants[0] FROM ${this._tbl} WHERE @rid = ${id}`);
     return this._db.commandBatch(commands);
   }
   updateRecord(id, {
