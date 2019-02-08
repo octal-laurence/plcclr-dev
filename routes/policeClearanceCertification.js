@@ -4,7 +4,7 @@ const router = express.Router();
 // controller
 const controllerNewPoliceClrCertifications = require('../controller/newPoliceClearanceCertifications');
 const controllerEditPoliceClrCertifications = require('../controller/editPoliceClearanceCertifications');
-const controllerDeletePoliceClrCertifications = require('../controller/DeletePoliceClearanceCertifications');
+const controllerDeletePoliceClrCertifications = require('../controller/deletePoliceClearanceCertifications');
 const controllerListPoliceClrCertifications = require('../controller/listPoliceClearanceCertifications');
 const controllerGetPoliceClrCertifications = require('../controller/getPoliceClearanceCertifications');
 const controllerGrantPoliceClrCertifications = require('../controller/grantPoliceClearanceCertifications');
