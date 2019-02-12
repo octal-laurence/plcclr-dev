@@ -31,6 +31,45 @@ exports.newApplicationEntry = req => {
     .exists()
     .isString(),
 
+    check('suffix')
+    .isString(),
+
+    check('gender')
+    .exists()
+    .isString(),
+
+    check('civilStatus')
+    .exists()
+    .isString(),
+
+    check('citizenship')
+    .exists()
+    .isString(),
+
+    check('dateBirth')
+    .exists(),
+
+    check('birthPlace')
+    .exists(),
+
+    check('religion')
+    .exists(),
+
+    check('height')
+    .exists(),
+
+    check('weight')
+    .exists(),  
+
+    check('applicantIDPhoto')
+    .exists(),
+
+    check('applicantSignature')
+    .exists(),
+    
+    check('applicantFingerPrints')
+    .exists(),
+
     check('address1')
     .exists()
     .isString(),
@@ -70,10 +109,6 @@ exports.listApplicationEntries = req => {
 
 exports.editApplicationEntry = req => {
   return [
-    check('id')
-    .exists()
-    .isString(),
-    
     check('machineId')
     .exists()
     .isString(),
@@ -100,6 +135,45 @@ exports.editApplicationEntry = req => {
     check('lastName')
     .exists()
     .isString(),
+
+    check('suffix')
+    .isString(),
+
+    check('gender')
+    .exists()
+    .isString(),
+
+    check('civilStatus')
+    .exists()
+    .isString(),
+
+    check('citizenship')
+    .exists()
+    .isString(),
+
+    check('dateBirth')
+    .exists(),
+
+    check('birthPlace')
+    .exists(),
+
+    check('religion')
+    .exists(),
+
+    check('height')
+    .exists(),
+
+    check('weight')
+    .exists(),  
+
+    check('applicantIDPhoto')
+    .exists(),
+
+    check('applicantSignature')
+    .exists(),
+    
+    check('applicantFingerPrints')
+    .exists(),
 
     check('address1')
     .exists()
@@ -141,6 +215,18 @@ exports.getApplicationEntry = req => {
 exports.grantCertificate = req => {
   return [
     check('plcclrId')
+    .exists()
+    .isString(),
+    check('machineId')
+    .exists()
+    .isString(),
+    check('station')
+    .exists()
+    .isString(),
+    check('findings')
+    .exists()
+    .isString(),
+    check('purpose')
     .exists()
     .isString(),
     check('verifiedBy')
@@ -192,4 +278,8 @@ exports.getCertificate = req => {
     .exists()
     .isString()
   ];
+}
+
+exports.listCertificates = req => {
+    return [];
 }

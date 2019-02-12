@@ -35,9 +35,9 @@ class Certificates {
     return new Promise((resolve, reject) => {
       this._db.commandBatch([`
         let certificates = INSERT INTO ${this._tbl} SET
-        plcclrId = (select from ${plcclrId}),
         machineId = :machineId,
         station = :station,
+        plcclrId = (select from ${plcclrId}),
         applicantId = (select from ${applicantId}),
         findings = :findings,
         purpose = :purpose,
@@ -50,7 +50,11 @@ class Certificates {
         let certificationEntry = UPDATE ${this._policeClearanceCertifications.tbl} SET 
         status = :status 
         WHERE @rid = ${plcclrId}
-      `,`
+      `
+      ,`
+        CREATE EDGE  ${edgePoliceClearanceCertificationCertificates.tbl} FROM ${plcclrId} TO $certificates.@rid
+      `
+      ,`
         return $certificates
       `],
         { plcclrId,
@@ -73,6 +77,25 @@ class Certificates {
     return new Promise((resolve, reject) => {
       this._db.commandQuery(`
         SELECT plcclrId:{*} as certificationEntry, applicantId:{*} as applicantData, * FROM ${this._tbl} WHERE @rid = ${id}
+      `)
+      .then(({result}) => resolve(result))
+      .catch(err => reject(err));
+    });
+  }
+  listRecords(filter={}, pgSkip=0, pgLimit=100) {
+    let queryFilter = '';
+    let queryPaginator = '';
+
+    // PAGINATE
+    if (pgSkip) {
+      queryPaginator += `SKIP ${((pgLimit * pgSkip) - pgLimit)}`;
+    }
+
+    return new Promise((resolve, reject) => {
+      this._db.commandQuery(`
+        SELECT plcclrId:{*} as certificationEntry, applicantId:{fullName} as applicantData,* FROM ${this._tbl} 
+        ORDER BY @rid DESC 
+        ${(queryPaginator != '') ? `${queryPaginator} LIMIT ${pgLimit}` : `LIMIT ${pgLimit}`}
       `)
       .then(({result}) => resolve(result))
       .catch(err => reject(err));

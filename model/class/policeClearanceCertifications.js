@@ -80,7 +80,7 @@ class PoliceClearanceCertifications {
      gender,
      civilStatus,
      citizenship,
-     dateBirth,
+     dateBirth: helper.dateMoment(new Date(dateBirth), helper.dateFormat.default),
      birthPlace,
      religion,
      height,
@@ -89,7 +89,7 @@ class PoliceClearanceCertifications {
      occupation,
      certResidency,
      certResidencyIssuedAt,
-     ctcIssuedDate,         
+     ctcIssuedDate: helper.dateMoment(new Date(ctcIssuedDate), helper.dateFormat.default),         
      applicantIDPhoto,
      applicantSignature,
 
@@ -106,8 +106,8 @@ class PoliceClearanceCertifications {
         machineId = :machineId,
         station = :station,
         stationName = :stationName,
-        dateCreated = :dateCreated,
-        dateUpdated = :dateUpdated,
+        dateCreated = DATE(:dateCreated),
+        dateUpdated = DATE(:dateUpdated),
         purpose = :purpose,
         remarks = :remarks,
         status = :status
@@ -123,7 +123,7 @@ class PoliceClearanceCertifications {
         gender = :gender,
         civilStatus = :civilStatus,
         citizenship = :citizenship,
-        dateBirth = :dateBirth,
+        dateBirth = DATE(:dateBirth),
         birthPlace = :birthPlace,
         religion = :religion,
         height = :height,
@@ -132,24 +132,20 @@ class PoliceClearanceCertifications {
         occupation = :occupation,
         certResidency = :certResidency,
         certResidencyIssuedAt = :certResidencyIssuedAt,
-        ctcIssuedDate = :ctcIssuedDate,
-        applicantIDPhoto = :applicantIDPhoto,
-        applicantSignature = :applicantSignature
-      `.replace(/\n/g, '')}
-    `, `
-      let address = INSERT INTO ${this._address.tbl} SET ${`
-        applicantId = $applicants.@rid,
+        ctcIssuedDate = DATE(:ctcIssuedDate),
+
         address1 = :address1,
         address2 = :address2,
         barangay = :barangay,
         city = :city,
         province = :province,
-        postalCode = :postalCode
+        postalCode = :postalCode,
+
+        applicantIDPhoto = :applicantIDPhoto,
+        applicantSignature = :applicantSignature
       `.replace(/\n/g, '')}
     `, `
       let edgeCertificationApplicants = CREATE EDGE ${this._edgePoliceClearanceCertifications.tbl} FROM $applicants.@rid TO $certifications.@rid SET dateCreated = :dateCreated
-    `, `
-      let edgeApplicantsAddress = CREATE EDGE ${this._edgeApplicantsAddress.tbl} FROM $address.@rid TO $applicants.@rid
     `, `
       return [{"certification": $certifications.@rid}, {"applicant": $applicants.@rid}]
     `];

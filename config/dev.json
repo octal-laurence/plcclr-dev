@@ -10,8 +10,8 @@
     "portHttp": 2434,
     "apiURL": "https://ec2-54-189-181-33.us-west-2.compute.amazonaws.com:2434",
     "apiSecret": "",
-    "db": "plcclr-dev1",
-    "username": "admin",
-    "password": "admin"
+    "db": "plcclr-dev",
+    "username": "root",
+    "password": "iZl4w0ZMWsupfSSFbuWFMZk7kIMC6Aa/buiNmdogWm8="
   }
 }

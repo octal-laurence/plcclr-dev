@@ -68,32 +68,24 @@ function constructCertificationData([entry, fingerPrints]) {
     weight: dataApplicant && dataApplicant.weight,
     applicantIDPhoto: dataApplicant && dataApplicant.applicantIDPhoto,
     applicantSignature: dataApplicant && dataApplicant.applicantSignature,
-    address1: 'address1',
-    address2: 'address1',
-    barangay: 'barangay',
-    city: 'city',
-    province: 'province',
-    postalCode: '1850',
     occupation: dataApplicant && dataApplicant.occupation,
     contactNumber: dataApplicant && dataApplicant.contactNumber,
     certResidency: dataApplicant && dataApplicant.certResidency,
     certResidencyIssuedAt: dataApplicant && dataApplicant.certResidencyIssuedAt,
     ctcIssuedDate: dataApplicant && dataApplicant.ctcIssuedDate,
   };
+  const address = {
+    address1: dataApplicant && dataApplicant.address1,
+    address2: dataApplicant && dataApplicant.address2,
+    barangay: dataApplicant && dataApplicant.barangay,
+    city: dataApplicant && dataApplicant.city,
+    province: dataApplicant && dataApplicant.province,
+    postalCode: dataApplicant && dataApplicant.postalCode
+  };
   const applicantFingerPrints = fingerPrints.reduce((obj, item) => {
                                   obj[item.label] = item.dataURI
                                   return obj;
                                 }, {});
-
-  const [dataAddress] = entry.address;
-  const address = {
-    address1: dataAddress && dataAddress.address1,
-    address2: dataAddress && dataAddress.address2,
-    barangay: dataAddress && dataAddress.barangay,
-    city: dataAddress && dataAddress.city,
-    province: dataAddress && dataAddress.province,
-    postalCode: dataAddress && dataAddress.postalCode,
-  }
 
   return {
     ...plcclrCertification,

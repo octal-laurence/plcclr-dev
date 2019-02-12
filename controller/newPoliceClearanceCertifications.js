@@ -82,6 +82,8 @@ function newPoliceClearanceCertifications({
 
       applicantIDPhoto,
       applicantSignature,
+
+      // to modify
       applicantFingerPrint: {
         leftThumb: '',
         rightThumb: '',
@@ -134,6 +136,7 @@ module.exports = (req, res, next) => {
     })
     .catch(err => {
       console.log(err);
+      console.log(err.message);
       console.log('error');
       resJSON.errorServer({error: err.message}, res);
     });

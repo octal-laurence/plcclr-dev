@@ -9,6 +9,7 @@ const controllerListPoliceClrCertifications = require('../controller/listPoliceC
 const controllerGetPoliceClrCertifications = require('../controller/getPoliceClearanceCertifications');
 const controllerGrantPoliceClrCertifications = require('../controller/grantPoliceClearanceCertifications');
 const controllerGetPoliceClrCertificates = require('../controller/getPoliceClearanceCertificates');
+const controllerListPoliceClrCertificates = require('../controller/listPoliceClearanceCertificates');
 
 // validators
 const validatorPoliceClrCertifications = require('../http/validators/policeClearanceCertifications');
@@ -21,6 +22,7 @@ router.post('/getApplicationEntry', validatorPoliceClrCertifications.getApplicat
 
 router.post('/grantCertificate', validatorPoliceClrCertifications.grantCertificate(), controllerGrantPoliceClrCertifications);
 router.post('/getCertificate', validatorPoliceClrCertifications.getCertificate(), controllerGetPoliceClrCertificates);
+router.post('/listCertificates', validatorPoliceClrCertifications.listCertificates(), controllerListPoliceClrCertificates)
 
 // FOR TESTING MUST REMOVE SOON
 router.post('/testpush', (req, res, next) => {
