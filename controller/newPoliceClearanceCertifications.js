@@ -141,6 +141,7 @@ module.exports = (req, res, next) => {
       resJSON.errorServer({error: err.message}, res);
     });
   } else {
+    console.log(validatorError.mapped());
     resJSON.errorInput({error: validatorError.mapped()}, res);
   }
 };

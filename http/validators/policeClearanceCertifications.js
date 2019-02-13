@@ -67,7 +67,7 @@ exports.newApplicationEntry = req => {
     check('applicantSignature')
     .exists(),
     
-    check('applicantFingerPrints')
+    check('applicantFingerPrint')
     .exists(),
 
     check('address1')
@@ -172,7 +172,7 @@ exports.editApplicationEntry = req => {
     check('applicantSignature')
     .exists(),
     
-    check('applicantFingerPrints')
+    check('applicantFingerPrint')
     .exists(),
 
     check('address1')
