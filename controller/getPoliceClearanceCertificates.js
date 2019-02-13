@@ -74,6 +74,9 @@ function constructCertificationData([certificate, fingerPrints]) {
     weight: applicantData[0].weight,
     applicantIDPhoto: applicantData[0].applicantIDPhoto,
     applicantSignature: applicantData[0].applicantSignature,
+    addressComplete: (({address1,address2,barangay,city,province}) => {
+      return `${address1} ${address2} ${barangay}, ${city} ${province}`
+    })(applicantData[0]),
     address1: applicantData[0].address1 || '.',
     address2: applicantData[0].address2 || '.',
     barangay: applicantData[0].barangay || '.',

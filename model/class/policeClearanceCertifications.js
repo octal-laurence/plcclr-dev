@@ -76,7 +76,7 @@ class PoliceClearanceCertifications {
      middleName,
      lastName,
      suffix,
-     fullName: `${lastName} ${firstName} ${middleName}`,
+     fullName: `${lastName} ${firstName} ${middleName} ${suffix}`,
      gender,
      civilStatus,
      citizenship,
