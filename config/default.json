@@ -1,4 +1,7 @@
 {
+  "node": {
+    "PORT": 3000
+  },
   "certificationStatus": {
     "closed": "CLOSED",
     "open": "OPEN",
