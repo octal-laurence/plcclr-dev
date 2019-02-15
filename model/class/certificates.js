@@ -1,11 +1,14 @@
 const config = require('config');
 const helper = require('../../helper/util');
 
-const applicants = require('./applicants');
-const policeClearanceCertifications = require('./policeClearanceCertifications');
+const Applicants = require('./applicants');
+const PoliceClearanceCertifications = require('./policeClearanceCertifications');
+const FingerPrints = require('./fingerPrints');
 
 // EDGES
+const edgePoliceClearanceCertificationApplicants = require('../edges/policeClearanceCertificationApplicants');
 const edgePoliceClearanceCertificationCertificates = require('../edges/policeClearanceCertificationCertificates');
+const edgeApplicantsFingerPrints = require('../edges/applicantsFingerPrints');
 
 const tbl = 'certificates';
 class Certificates {
@@ -13,8 +16,8 @@ class Certificates {
     this._db = database;
     this._tbl = tbl;
 
-    this._applicants = applicants;
-    this._policeClearanceCertifications = policeClearanceCertifications;
+    this._applicants = Applicants;
+    this._policeClearanceCertifications = PoliceClearanceCertifications;
   }
   grantCertificate({
     plcclrId,
@@ -76,7 +79,9 @@ class Certificates {
   getRecordOf(id) {
     return new Promise((resolve, reject) => {
       this._db.commandQuery(`
-        SELECT plcclrId:{*} as certificationEntry, applicantId:{*} as applicantData, * FROM ${this._tbl} WHERE @rid = ${id}
+        SELECT plcclrId:{*} as certificationEntry, applicantId:{*} as applicantData, 
+        IN('${edgePoliceClearanceCertificationCertificates.tbl}').IN('${edgePoliceClearanceCertificationApplicants.tbl}').IN('${edgeApplicantsFingerPrints.tbl}')[0]:{*} as applicantFingerPrints,  
+        * FROM ${this._tbl} WHERE @rid = ${id}
       `)
       .then(({result}) => resolve(result))
       .catch(err => reject(err));

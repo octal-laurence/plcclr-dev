@@ -21,23 +21,43 @@ function getPoliceClrCertification(id) {
 
 function getFingerPrintImages([entry]) {
   return new Promise((resolve, reject) => {
-    const [applicant] = entry.applicant;
-    const applicantId = applicant['@rid'].toString().split("#")[1].replace(':', '-');
-    const path = `./public/fingerPrints/${applicantId}`;
+    const [applicantFingerPrints] = entry.applicantFingerPrints;
+    const reMapApplicantFingerPrints = Object.entries(applicantFingerPrints)
+                                       .filter(([k, v]) => (k.indexOf('rightThumb') > -1 || k.indexOf('leftThumb') > -1))
+                                       .reduce((obj, [k,v]) => {
+                                          if (k.indexOf('rightThumb') > -1) {
+                                            return {
+                                              ...obj,
+                                              rightThumb: {
+                                                ...obj.rightThumb,
+                                                [k.replace('rightThumbG', '')]: v
+                                              }
+                                            }
+                                          }
+                                          if (k.indexOf('leftThumb') > -1) {
+                                            return {
+                                              ...obj,
+                                              leftThumb: {
+                                                ...obj.leftThumb,
+                                                [k.replace('leftThumbG', '')]: v
+                                              }
+                                            }
+                                          }
+                                          return obj;
+                                       }, {});
 
-    bluebird.map(['leftThumb', 'rightThumb'], (item) => {
-      const fingerPrint = fs.readFileSync(`${path}/${item}.png`);
-      return {
-        dataURI: fingerPrint.toString('base64'),
-        label: item,
-      }
-    })
-    .then(result => resolve([entry, result]))
-    .catch(err => reject(err));
+    const buildDataURI = Object.entries(reMapApplicantFingerPrints)
+                         .map(([k, v]) => ({
+                              label: k,
+                              dataURI: Object.entries(v)
+                                       .reduce((text, [chunkName, chunkVal]) => (`${text}${chunkVal}`), ``)
+                          }));
+ 
+    resolve([entry, buildDataURI]);
   });
 }
 
-function constructCertificationData([entry, fingerPrints]) {
+function constructCertificationData([entry, fingerPrints =[]]) {
   const plcclrCertification = {
     '@rid': entry['@rid'].toString().split('#')[1],
     machineId: entry.machineId,
@@ -82,10 +102,10 @@ function constructCertificationData([entry, fingerPrints]) {
     province: dataApplicant && dataApplicant.province,
     postalCode: dataApplicant && dataApplicant.postalCode
   };
-  const applicantFingerPrints = fingerPrints.reduce((obj, item) => {
-                                  obj[item.label] = item.dataURI
-                                  return obj;
-                                }, {});
+  const applicantFingerPrints = fingerPrints.reduce((obj, item) => ({
+                                  ...obj,
+                                  [item.label]: item.dataURI
+                                }), {});
 
   return {
     ...plcclrCertification,

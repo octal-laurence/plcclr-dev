@@ -1,7 +1,5 @@
 const {validationResult} = require('express-validator/check');
 const {OK} = require('http-status-codes');
-const bluebird = require('bluebird');
-const fsExtra = require('fs-extra');
 
 const DB = require('../model/plcclr');
 const resJSON = require('../http/resJSON');
@@ -40,11 +38,9 @@ function editPoliceClearanceCertifications({
   postalCode,
 
   applicantIDPhoto,
-  applicantSignature,
-  applicantFingerPrint,
+  applicantSignature
 }) {
   const plcclr = new DB.Plcclr();
-  let clearanceCertification;
 
   return new Promise((resolve, reject) => {
     plcclr
@@ -82,38 +78,10 @@ function editPoliceClearanceCertifications({
       postalCode,
 
       applicantIDPhoto,
-      applicantSignature,
-      applicantFingerPrint,
+      applicantSignature
     })
-    .then(({certification, applicant}) => {
-      clearanceCertification = {certification, applicant};
-      const applicantID = applicant.toString().split("#")[1].replace(':', '-');
-      const fingerPrints = Object.entries(applicantFingerPrint)
-                            .map(([k, v]) => ({
-                              applicant: applicantID,
-                              thumb: k,
-                              base64: v,
-                            }));
-
-      return bluebird.map(fingerPrints, writeFingerPrintImage);
-    })
-    .then(result => resolve(clearanceCertification))
+    .then(({certification, applicant}) => resovle({certification, applicant}))
     .catch(err => reject(err));
-  });
-}
-
-function writeFingerPrintImage({applicant, thumb, base64}) {
-  return new Promise((resolve, reject) => {
-    const fileName = `${thumb}.png`;
-    const path = `./public/fingerPrints/${applicant}`;
-
-    fsExtra.outputFile(`${path}/${fileName}`, new Buffer(base64, 'base64'), (err) => {
-      if (!err) {
-        resolve(applicant);
-      } else {
-        reject(err);
-      }
-    });
   });
 }
 

@@ -82,46 +82,18 @@ function newPoliceClearanceCertifications({
 
       applicantIDPhoto,
       applicantSignature,
-
-      // to modify
-      applicantFingerPrint: {
-        leftThumb: '',
-        rightThumb: '',
-      },
+      applicantFingerPrint
     })
     .then(([{certification}, {applicant}]) => {
       const [ridCertification] = certification;
       const [ridApplicant] = applicant;
 
       clearanceCertification = [{certification: {'@rid': ridCertification}}, {applicant: {'@rid': ridApplicant}}];
-      const applicantID = ridApplicant.toString().split("#")[1].replace(':', '-');
-      const fingerPrints = Object.entries(applicantFingerPrint)
-                            .map(([k, v]) => ({
-                              applicant: applicantID,
-                              thumb: k,
-                              base64: v,
-                            }));
-
-      return bluebird.map(fingerPrints, writeFingerPrintImage);
+      return clearanceCertification;
     })
     .then(result => resolve(clearanceCertification))
     .catch(err => reject(err));
   }); 
-}
-
-function writeFingerPrintImage({applicant, thumb, base64}) {
-  return new Promise((resolve, reject) => {
-    const fileName = `${thumb}.png`;
-    const path = `./public/fingerPrints/${applicant}`;
-
-    fsExtra.outputFile(`${path}/${fileName}`, new Buffer(base64, 'base64'), (err) => {
-      if (!err) {
-        resolve(applicant);
-      } else {
-        reject(err);
-      }
-    });
-  });
 }
 
 module.exports = (req, res, next) => {

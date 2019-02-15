@@ -1,12 +1,14 @@
 const config = require('config');
 const helper = require('../../helper/util');
 
-const applicants = require('./applicants');
-const address = require('./address');
+const Applicants = require('./applicants');
+const Address = require('./address');
+const FingerPrints = require('./fingerPrints');
 
 // EDGES
 const edgePoliceClearanceCertifications = require('../edges/policeClearanceCertificationApplicants');
 const edgeApplicantsAddress = require('../edges/applicantsAddress');
+const edgeApplicantsFingerPrints = require('../edges/applicantsFingerPrints');
 
 const tbl = 'policeClearanceCertifications';
 class PoliceClearanceCertifications {
@@ -14,11 +16,29 @@ class PoliceClearanceCertifications {
     this._db = database;
     this._tbl = tbl;
 
-    this._address = address;
-    this._applicants = applicants;
+    this._applicants = Applicants;
+    this._address = Address;
 
     this._edgePoliceClearanceCertifications = edgePoliceClearanceCertifications;
     this._edgeApplicantsAddress = edgeApplicantsAddress;
+  }
+  static handlerApplicantFingerPrints({leftThumb, rightThumb}) {
+    return Object.entries({
+      leftThumb,
+      rightThumb
+    }).map(([k, v]) => {
+      let marker = 0;
+      const pushNUmber = 10000;
+      const groups = {};
+
+      do {
+        groups[`${k}G${Object.entries(groups).length}`] = v.slice(marker, (marker + pushNUmber));
+        marker += pushNUmber
+      }
+      while(v.slice(marker, (marker + pushNUmber)).length !== 0)
+
+      return groups;
+    });
   }
   newRecord({
     machineId,
@@ -57,8 +77,14 @@ class PoliceClearanceCertifications {
     applicantFingerPrint,
   }) {
     const dateRecord = helper.dateMoment(new Date(), helper.dateFormat.orientdb);
-    const leftThumb = applicantFingerPrint.leftThumb;
-    const rightThumb = applicantFingerPrint.rightThumb;
+
+    const fingerPrints = this.constructor.handlerApplicantFingerPrints(applicantFingerPrint);
+
+    const insertQuery = fingerPrints.map((e) => {
+      const text = Object.entries(e).reduce((txt, [k,item]) => (`${txt}${k}='${item}',`), ``).split(',');
+      text.pop();
+      return text.join(',');
+    });
 
     const parameters = {
      // Certification Request
@@ -146,7 +172,14 @@ class PoliceClearanceCertifications {
       `.replace(/\n/g, '')}
     `, `
       let edgeCertificationApplicants = CREATE EDGE ${this._edgePoliceClearanceCertifications.tbl} FROM $applicants.@rid TO $certifications.@rid SET dateCreated = :dateCreated
-    `, `
+    `
+    ,`
+      let applicantsFingerPrints = INSERT INTO ${FingerPrints.tbl} SET ${insertQuery.join(',')}
+    `
+    ,`
+      let edgeApplicantsFingerPrints = CREATE EDGE ${edgeApplicantsFingerPrints.tbl} FROM $applicantsFingerPrints.@rid TO $applicants.@rid
+    `
+    , `
       return [{"certification": $certifications.@rid}, {"applicant": $applicants.@rid}]
     `];
 
@@ -213,9 +246,12 @@ class PoliceClearanceCertifications {
 
     applicantIDPhoto,
     applicantSignature,
-    applicantFingerPrint,
+
+    // Remove Soon
+    // applicantFingerPrint,
   }) {
     const dateRecord = helper.dateMoment(new Date(), helper.dateFormat.orientdb);
+
     const commands = [`
       let certifications = UPDATE ${this._tbl} SET ${`
         machineId = :machineId,
@@ -327,13 +363,15 @@ class PoliceClearanceCertifications {
         SELECT 
         IN('${this._edgePoliceClearanceCertifications.tbl}').toJson() as applicant, 
         IN('${this._edgePoliceClearanceCertifications.tbl}').IN('${this._edgeApplicantsAddress.tbl}').toJson() as address, 
+        IN('${this._edgePoliceClearanceCertifications.tbl}').IN('${edgeApplicantsFingerPrints.tbl}').toJson() as applicantFingerPrints, 
         * FROM ${rid}
       `)
       .then(({result}) => {
-        const [{applicant, address, ...certifications}] = result
+        const [{applicant, applicantFingerPrints, address, ...certifications}] = result
         resolve([{
           applicant: JSON.parse(applicant),
           address: JSON.parse(address),
+          applicantFingerPrints: JSON.parse(applicantFingerPrints),
           ...certifications,
         }]);
       })
