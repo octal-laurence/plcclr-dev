@@ -5,6 +5,7 @@ const bluebird = require('bluebird');
 
 const DB = require('../model/plcclr');
 const resJSON = require('../http/resJSON');
+const helper = require('../helper/util');
 
 function getPoliceClrCertification(id) {
   return new Promise((resolve, reject) => {
@@ -81,7 +82,7 @@ function constructCertificationData([entry, fingerPrints =[]]) {
     gender: dataApplicant && dataApplicant.gender,
     civilStatus: dataApplicant && dataApplicant.civilStatus,
     citizenship: dataApplicant && dataApplicant.citizenship,
-    dateBirth: dataApplicant && dataApplicant.dateBirth,
+    dateBirth: dataApplicant && helper.dateMoment(dataApplicant.dateBirth, helper.dateFormat.MDY),
     birthPlace: dataApplicant && dataApplicant.birthPlace,
     religion: dataApplicant && dataApplicant.religion,
     height: dataApplicant && dataApplicant.height,
@@ -92,7 +93,7 @@ function constructCertificationData([entry, fingerPrints =[]]) {
     contactNumber: dataApplicant && dataApplicant.contactNumber,
     certResidency: dataApplicant && dataApplicant.certResidency,
     certResidencyIssuedAt: dataApplicant && dataApplicant.certResidencyIssuedAt,
-    ctcIssuedDate: dataApplicant && dataApplicant.ctcIssuedDate,
+    ctcIssuedDate: dataApplicant && helper.dateMoment(dataApplicant.ctcIssuedDate, helper.dateFormat.MDY),
   };
   const address = {
     address1: dataApplicant && dataApplicant.address1,

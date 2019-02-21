@@ -80,7 +80,7 @@ function editPoliceClearanceCertifications({
       applicantIDPhoto,
       applicantSignature
     })
-    .then(({certification, applicant}) => resovle({certification, applicant}))
+    .then(({certification, applicant}) => resolve({certification, applicant}))
     .catch(err => reject(err));
   });
 }

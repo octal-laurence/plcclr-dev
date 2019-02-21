@@ -11,7 +11,7 @@ function listRecords({
   return new Promise((resolve, reject) => {
     const plcclr = new DB.Plcclr();
     plcclr.certificates()
-    .listRecords()
+    .listRecords({}, pgSkip, pgLimit)
     .then(result => {
       const reMapResult = result.reduce((list, {
         plcclrId,
