@@ -29,9 +29,9 @@ module.exports = (req, res, next) => {
     .catch(err => {
       console.log(err);
       console.log('error');
-      resJSON.serverError({error: err.message}, res);
+      resJSON.errorServer({error: err.message}, res);
     })
   } else {
-    resJSON.inputError({error: validatorError.mapped()}, res);
+    resJSON.errorInput({error: validatorError.mapped()}, res);
   }
 }

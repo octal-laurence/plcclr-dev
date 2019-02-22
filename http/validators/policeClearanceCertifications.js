@@ -97,7 +97,27 @@ exports.listApplicationEntries = req => {
     .custom(custom.isString),
 
     check('dateCreated')
-    .custom(custom.isDate),
+    .custom(input => {
+      if ( input && typeof input != 'object') {
+        return  false
+      }
+
+      return true
+    })
+    .custom(input => {
+      if ( input && (!input.hasOwnProperty('from') || !input.hasOwnProperty('to'))) {
+        return false
+      }
+
+      return true
+    })
+    .custom(input => {
+      if ( input && [input.from, input.to].filter(e => (new Date(e) == 'Invalid Date')).length > 0) {
+        return false
+      }
+
+      return true
+    }),
 
     check('pgSkip')
     .custom(custom.isInteger),
@@ -170,9 +190,6 @@ exports.editApplicationEntry = req => {
     .exists(),
 
     check('applicantSignature')
-    .exists(),
-    
-    check('applicantFingerPrint')
     .exists(),
 
     check('address1')
@@ -281,5 +298,37 @@ exports.getCertificate = req => {
 }
 
 exports.listCertificates = req => {
-    return [];
+  return [
+    check('fullName')
+    .custom(custom.isString),
+
+    check('dateCertified')
+    .custom(input => {
+      if ( input && typeof input != 'object') {
+        return  false
+      }
+
+      return true
+    })
+    .custom(input => {
+      if ( input && (!input.hasOwnProperty('from') || !input.hasOwnProperty('to'))) {
+        return false
+      }
+
+      return true
+    })
+    .custom(input => {
+      if ( input && [input.from, input.to].filter(e => (new Date(e) == 'Invalid Date')).length > 0) {
+        return false
+      }
+
+      return true
+    }),
+
+    check('pgSkip')
+    .custom(custom.isInteger),
+
+    check('pgLimit')
+    .custom(custom.isInteger)
+  ];
 }

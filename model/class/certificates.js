@@ -91,6 +91,11 @@ class Certificates {
     let queryFilter = '';
     let queryPaginator = '';
 
+    const sqlSeperator = (sql='') => (sql !== '') ? `AND` : ``;
+    if (filter.hasOwnProperty('dateCertified') && filter.dateCertified && filter.dateCertified != 'Invalid Date') {
+      queryFilter += ` ${sqlSeperator(queryFilter)} dateCertified BETWEEN '${helper.dateMoment(new Date(filter.dateCertified.from), helper.dateFormat.orientdb)}' AND '${helper.dateMoment(new Date(filter.dateCertified.to), helper.dateFormat.orientdb)}'`;
+    }
+
     // PAGINATE
     if (pgSkip) {
       queryPaginator += `SKIP ${((pgLimit * pgSkip) - pgLimit)}`;
@@ -98,7 +103,7 @@ class Certificates {
 
     return new Promise((resolve, reject) => {
       this._db.commandQuery(`
-        SELECT plcclrId:{*} as certificationEntry, applicantId:{fullName} as applicantData,* FROM ${this._tbl} 
+        SELECT plcclrId:{*} as certificationEntry, applicantId:{fullName} as applicantData,* FROM ${this._tbl}${(queryFilter != '') ? ` WHERE${queryFilter}` : ``}  
         ORDER BY @rid DESC 
         ${(queryPaginator != '') ? `${queryPaginator} LIMIT ${pgLimit}` : `LIMIT ${pgLimit}`}
       `)

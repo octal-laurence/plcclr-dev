@@ -5,13 +5,14 @@ const DB = require('../model/plcclr');
 const resJSON = require('../http/resJSON');
 
 function listRecords({
+  dateCertified,
   pgSkip,
   pgLimit
 }) {
   return new Promise((resolve, reject) => {
     const plcclr = new DB.Plcclr();
     plcclr.certificates()
-    .listRecords({}, pgSkip, pgLimit)
+    .listRecords({dateCertified}, pgSkip, pgLimit)
     .then(result => {
       const reMapResult = result.reduce((list, {
         plcclrId,

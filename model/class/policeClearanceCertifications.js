@@ -196,18 +196,21 @@ class PoliceClearanceCertifications {
   }
   deleteRecord(id) {
     const commands = [
-        `
-        let getEdgeCertificationsApplicants = SELECT EXPAND(IN('${this._edgePoliceClearanceCertifications.tbl}')) FROM ${this._tbl} WHERE @rid = ${id}
-      `
-      , `
-        let delCertification = DELETE VERTEX FROM ${this._tbl} WHERE @rid = ${id}
-      `
-      , `
-        let delApplicant = DELETE VERTEX FROM ${this._applicants.tbl} WHERE @rid IN $getEdgeCertificationsApplicants.@rid
-      `
-      ,`
-        return $delApplicant
-      `
+     `
+      let certificationEntry = SELECT IN('${this._edgePoliceClearanceCertifications.tbl}')[0]:{@rid} as applicant, IN('${this._edgePoliceClearanceCertifications.tbl}').IN('${edgeApplicantsFingerPrints.tbl}')[0]:{@rid} as fingerPrints FROM ${this._tbl} WHERE @rid = ${id}
+    `
+    ,`
+      let delCertification = DELETE VERTEX FROM ${this._tbl} WHERE @rid = ${id}
+    `
+    ,`
+      let delApplicant = DELETE VERTEX FROM ${this._applicants.tbl} WHERE @rid IN $certificationEntry.applicant
+    `
+    ,`
+      let delFingerPrints = DELETE VERTEX FROM ${FingerPrints.tbl} WHERE @rid IN $certificationEntry.fingerPrints
+    `
+    ,`
+      return $delCertification
+    `
     ];
 
     return this._db.commandBatch(commands);
@@ -391,7 +394,7 @@ class PoliceClearanceCertifications {
         queryFilter += ` status = '${filter.status}'`
       }
       if (filter.hasOwnProperty('dateCreated') && filter.dateCreated && filter.dateCreated != 'Invalid Date') {
-        queryFilter += ` ${sqlSeperator(queryFilter)} dateCreated BETWEEN '${helper.dateMoment(new Date(filter.dateCreated), helper.dateFormat.orientdb)}' AND '${helper.dateMoment(new Date(), helper.dateFormat.orientdb)}'`;
+        queryFilter += ` ${sqlSeperator(queryFilter)} dateCreated BETWEEN '${helper.dateMoment(new Date(filter.dateCreated.from), helper.dateFormat.orientdb)}' AND '${helper.dateMoment(new Date(filter.dateCreated.to), helper.dateFormat.orientdb)}'`;
       }
       if (filter.hasOwnProperty('fullName') && filter.fullName &&  filter.fullName != '') {
         queryFilter += ` ${sqlSeperator(queryFilter)} IN('${this._edgePoliceClearanceCertifications.tbl}')[0].fullName LIKE "%${filter.fullName}%"`

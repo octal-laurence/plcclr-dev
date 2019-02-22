@@ -15,7 +15,6 @@ function listPoliceClearanceCertifications({
 }) {
   return new Promise((resolve, reject) => {
     const plcclr = new DB.Plcclr();
-
     plcclr.policeClearanceCertifications()
     .listRecords({
       fullName,
